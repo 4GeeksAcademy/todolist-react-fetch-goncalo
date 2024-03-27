@@ -29,11 +29,27 @@ const TodoList = () => {
   };
 
   const addNewTodo = () => {
-    fetch(`https://playground.4geeks.com/apis/fake/todos/user/${userName}`, {
-      method: 'PUT',
-      body: JSON.stringify(todoList),
-      headers:
-    })
+    const newTodoList =[...todoList, {done: false, label: newTodo}]
+
+    if (newTodo !== ''){
+      fetch(`https://playground.4geeks.com/apis/fake/todos/user/${userName}`, {
+        method: 'PUT',
+        body: JSON.stringify(newTodoList),
+        headers: {
+          "Content-Type": "application/json"
+        },
+      }).then(resp => {
+        if (resp.ok) {
+          return resp.json()
+        }
+        throw Error(resp.status + "Something went wrong");
+      }).then((newTodoData) => {
+        fetchTodoList()
+        setNewTodo("")
+      }).catch((err) => {
+        console.log("Something went wrong", err);
+      })
+    }
   }
 
   return (

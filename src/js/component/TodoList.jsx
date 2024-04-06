@@ -24,7 +24,7 @@ const TodoList = () => {
       return userExists;
     } catch (err) {
       console.log(err);
-      return false; // Return false if an error occurs
+      return false;
     }
   };
 

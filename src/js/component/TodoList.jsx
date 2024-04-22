@@ -54,6 +54,11 @@ const TodoList = () => {
   };
 
   const fetchTodoList = () => {
+    if (todoList == []) {
+      console.log("No tasks to fetch, todoList is empty.");
+      return;
+    }
+
     console.log("Fetch the username", userName);
     fetch(`https://playground.4geeks.com/todo/users/${userName}`, {
       method: "GET",
@@ -133,59 +138,92 @@ const TodoList = () => {
     })
       .then((resp) => {
         if (resp.ok) {
-          return resp.json();
+          // Check if response has content
+          if (resp.status !== 204) {
+            return resp.json();
+          } else {
+            // No content in response, handle accordingly
+            return {};
+          }
+        } else {
+          throw Error(resp.status + " Something Went Wrong");
         }
-        throw Error(resp.status + " Something Went Wrong");
       })
-      .then(() => {
-        console.log(resp);
+      .then((data) => {
+        // Handle response data
+        console.log(data);
         setUserName("");
+        setTodoList([]);
         console.log("user deleted");
       })
       .catch((err) => {
         console.log("Something Went Wrong", err);
       });
   };
-
   return (
-    <div>
-      <div>
-        <input
-          value={userName}
-          onChange={(e) => setUserName(e.target.value)}
-          placeholder="Please, enter your username"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              {
-                createUser();
-                fetchTodoList();
-              }
-            }
-          }}
-        />
-        <button onClick={() => deleteUser(userName)}>Delete User</button>
+    <div className="container-fluid">
+      <div className="row">
+        <div className="col-3"></div>
+        <div className="col-6">
+          <h1 className="text-title">Todo List API</h1>
+        </div>
+        <div className="col-3"></div>
       </div>
-      <input
-        value={newTodo}
-        onChange={(e) => setNewTodo(e.target.value)}
-        placeholder="Enter a new task!"
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            addNewTodo();
-          }
-        }}
-      />
-      {todoList.map((todo, index) => {
-        return (
-          <div key={index}>
-            {todo.label}
-            <FontAwesomeIcon
-              icon={faTrashCan}
-              onClick={() => deleteTask(todo.id)}
-            />
-          </div>
-        );
-      })}
+      <div className="row">
+        <div className="col-3"></div>
+        <div className="col-6">
+          <input
+            className="input-field"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+            placeholder="Please, enter your username"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                {
+                  createUser();
+                  fetchTodoList();
+                }
+              }
+            }}
+          />
+          <button
+            className="delete-button"
+            onClick={() => deleteUser(userName)}
+          >
+            Delete User
+          </button>
+        </div>
+        <div className="col-3"></div>
+      </div>
+      <div className="row">
+        <div className="col-3"></div>
+        <div className="col-6">
+          <input
+            className="todos-input"
+            value={newTodo}
+            onChange={(e) => setNewTodo(e.target.value)}
+            placeholder="Enter a new task!"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                addNewTodo();
+              }
+            }}
+          />
+          {todoList.map((todo, index) => {
+            return (
+              <div key={index} className="todo-list">
+                {todo.label}
+                <FontAwesomeIcon
+                  className="trash-icon"
+                  icon={faTrashCan}
+                  onClick={() => deleteTask(todo.id)}
+                />
+              </div>
+            );
+          })}
+        </div>
+        <div className="col-3"></div>
+      </div>
     </div>
   );
 };
